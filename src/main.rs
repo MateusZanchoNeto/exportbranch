@@ -39,7 +39,7 @@ fn build_configuration() -> Configuration {
 
 fn export(source: &String, destination: &String, configuration: &Configuration) {
     let source_path_buffer = source_path(&source);
-    let destination_path_buffer = destination_path(&source_path_buffer, &destination);
+    let destination_path_buffer = destination_path(&source, &destination);
     let mut file_checker = FileChecker::new(Path::new(&destination).to_path_buf());
     let mut export = ExportBranch::build(
         source_path_buffer,
@@ -58,34 +58,27 @@ fn source_path(source: &String) -> PathBuf {
     })
 }
 
-fn destination_path(source_path: &PathBuf, destination: &String) -> PathBuf {
-    let mut ancestors = source_path.ancestors();
+fn destination_path(source: &String, destination: &String) -> PathBuf {
+    
+    if env::consts::OS == "windows" {
+        let mut windows_destination = Path::new(destination).to_path_buf();
+        let windows_source_path = Path::new(source).ancestors().next().unwrap();
 
-    let first = ancestors
-        .next()
-        .unwrap_or_else(|| {
-            eprintln!("Not found source path ancestor");
-            std::process::exit(1);
-        })
-        .file_name()
-        .unwrap_or_else(|| {
-            eprintln!("Not found source path ancestor");
-            std::process::exit(1);
-        });
+        
+        match windows_source_path.components().next().unwrap() {
+            std::path::Component::Prefix(prefix) => {
+                windows_destination = Path::new(&windows_destination).join(&windows_source_path.strip_prefix(prefix.as_os_str()).unwrap());
+            }
+            _ => {
+                eprintln!("Failed to get prefix from {:?}", windows_source_path);
+                std::process::exit(1);
+            }
+        }
 
-    let second = ancestors
-        .next()
-        .unwrap_or_else(|| {
-            eprintln!("Not found source path ancestor");
-            std::process::exit(1);
-        })
-        .file_name()
-        .unwrap_or_else(|| {
-            eprintln!("Not found source path ancestor");
-            std::process::exit(1);
-        });
+        return windows_destination;
+    }
 
-    Path::new(&destination).join(second).join(first)
+    Path::new(&destination).to_path_buf()
 }
 
 fn print_time_elapsed(timer: Instant) {

@@ -81,6 +81,9 @@ impl Configuration {
             previous_arg = String::new();
         }
 
+        destination = destination.into_iter().filter(|x| x.len() > 0).collect::<Vec<String>>();
+        source = source.into_iter().filter(|x| x.len() > 0).collect::<Vec<String>>();
+
         if destination.len() < 1 || source.len() < 1 {
             return Err(help());
         }

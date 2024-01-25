@@ -32,14 +32,13 @@ pub fn export(
         let entry_path = entry.path();
 
         if entry_path.is_dir() {
-            
             let entry_str = entry_path.to_str().unwrap();
 
             for disregarded_directory in exportbranch.configuration.disregarded_directories() {
                 if entry_str.contains(disregarded_directory) {
                     continue 'entrys;
                 }
-            };
+            }
 
             export_directory(
                 exportbranch,
@@ -166,10 +165,21 @@ fn print_file(only_copy: bool, entry_path: &PathBuf, dest_path: &PathBuf) {
                 "converting..."
             }
         },
-        entry_path.display(),
-        dest_path.display()
+        source_path_display(&entry_path.to_string_lossy()),
+        dest_path.to_string_lossy()
     );
 }
+
+#[cfg(target_os = "windows")]
+fn source_path_display(entry_path: &str) -> &str {
+    &entry_path[4..]
+}
+
+#[cfg(target_os = "linux")]
+fn source_path_display(entry_path: &PathBuf) -> &str {
+    &entry_path.to_string_lossy()
+}
+
 fn file_match(file: &PathBuf, file_filters: &Vec<Regex>) -> bool {
     let file_name = file.file_name().unwrap().to_str().unwrap();
 
@@ -189,7 +199,7 @@ fn file_need_update(
 ) -> FileStatus {
     let configuration = exportbranch.configuration;
 
-    if configuration.reload() || configuration.md5() || !destination_file.exists() {
+    if configuration.reload() || (configuration.md5() && !destination_file.exists()) {
         return exportbranch.file_checker.force_update(file);
     }
 

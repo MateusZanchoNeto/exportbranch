@@ -18,21 +18,6 @@ pub fn convert_file(entry_path: &PathBuf, dest_path: PathBuf) -> Result<()> {
     Ok(())
 }
 
-// fn convert_buffer(buffer: &mut Vec<u8>, from: &[u8], to: &[u8]) {
-//     let mut index = 0;
-//     while let Some(position) = buffer[index..]
-//         .windows(from.len())
-//         .position(|window| window == from)
-//     {
-//         let start = index + position;
-//         let end = start + from.len();
-
-//         buffer.splice(start..end, to.iter().cloned());
-
-//         index = start + to.len();
-//     }
-// }
-
 fn convert_buffer(buffer: &mut Vec<u8>, from: &[u8], to: &[u8]) {
     let mut i = 0;
     while i < buffer.len() {

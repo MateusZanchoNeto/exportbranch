@@ -160,7 +160,7 @@ fn print_file(only_copy: bool, entry_path: &PathBuf, dest_path: &PathBuf) {
         "{}\r\nsource.....: {}\r\ndestination: {}\r\n",
         {
             if only_copy {
-                "coping..."
+                "copying..."
             } else {
                 "converting..."
             }

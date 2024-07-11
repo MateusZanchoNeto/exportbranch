@@ -176,8 +176,8 @@ fn source_path_display(entry_path: &str) -> &str {
 }
 
 #[cfg(target_os = "linux")]
-fn source_path_display(entry_path: &PathBuf) -> &str {
-    &entry_path.to_string_lossy()
+fn source_path_display(entry_path: &str) -> &str {
+    entry_path
 }
 
 fn file_match(file: &PathBuf, file_filters: &Vec<Regex>) -> bool {

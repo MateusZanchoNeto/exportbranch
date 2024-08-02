@@ -27,19 +27,11 @@ pub fn export(
         fs::create_dir_all(&destination)?;
     }
 
-    'entrys: for entry in fs::read_dir(source)? {
+    for entry in fs::read_dir(source)? {
         let entry = entry?;
         let entry_path = entry.path();
 
         if entry_path.is_dir() {
-            let entry_str = entry_path.to_str().unwrap();
-
-            for disregarded_directory in exportbranch.configuration.disregarded_directories() {
-                if entry_str.contains(disregarded_directory) {
-                    continue 'entrys;
-                }
-            }
-
             export_directory(
                 exportbranch,
                 entry_path,
